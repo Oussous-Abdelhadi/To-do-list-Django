@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doclist</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
+    <script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous"></script>
+</head>
+<body>
+    
+<div class="container ">
+    <h1>Doclist</h1>
+    <div class="row">
+        <div class="col-8">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+                        <input type="text" name="task-description" class="form-control" id="TacheForm" placeholder="Ajouter une tâche">
+                        <button class="btn btn-primary"
+                        hx-post="{% url 'add-task' %}"
+                        hx-target="#tasks"
+                            hx-vals="js:{collection: getCollectionUrl()}"
+                            hx-swap="beforeend"
+                            type="submit"       
+                            >
+                            Ajouter
+                        </button>
+                    </div>                    
+            </form>
+            <br>
+            <div id="tasks">
+                {% include 'tasks/tasks.html' with tasks=tasks  collections=collections %}    
+            </div>
+        
+        </div>
+
+        <div class="col-2 shadow p-3 mb-5 bg-white rounded" id="collections">
+            <form  method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+
+                    <input type="text" name="collection-name" class="form-control">
+                    <button class="btn btn-primary"
+                            hx-post="{% url 'add-collection' %}"
+                            hx-target="#collections"
+                            hx-swap="beforeend"
+                            type="submit">Ajouter
+                </button>
+                </div>
+            
+            </form>
+            {% for collection in collections %}
+            <br>
+            <div class="row">
+                <button class="btn"
+                        hx-get="{% url 'get-task' collection.pk %}" 
+                        hx-target="#tasks"
+                        hx-push-url="?collection={{ collection.slug }}">{{ collection.name }}
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.body.addEventListener("htmx:responseError", function(evnt){
+        alert(evnt.detail.xhr.responseText)
+    })
+
+    function getCollectionUrl(){
+        let params = new URLSearchParams(document.location.search)
+        collection = params.get("collection")
+        return collection
+    }
+</script>
+</body>
+</html>

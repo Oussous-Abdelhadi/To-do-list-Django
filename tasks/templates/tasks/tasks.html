@@ -1,0 +1,30 @@
+{% for task in tasks %}
+<form method="post">
+    {% csrf_token %}
+    <div class="input-group border-bottom">
+
+        <p class="col-10">{{ task.description }}</p> 
+        <div class="col-2 ">
+
+            <button 
+                class="btn btn-danger btn-sm"
+                hx-post="{% url 'delete-task' task.pk %}" 
+                hx-target="closest form"
+                hx-swap="outerHTML"
+                type="submit">Supprimer
+            </button>
+        </div>
+    </form>
+</div>
+<br>
+{% endfor %}
+{% if collections.pk %}
+<div class="d-flex justify-content-center">
+        <a 
+        class="btn btn-danger"
+        href="{% url 'delete-collection' collections.pk %}"
+        >Supprimer la collection : {{ collections.name }}
+</a>
+</div>
+
+{% endif %}

@@ -1,0 +1,10 @@
+{% for collection in collections %}
+<br>
+<div class="row">
+    <button class="btn"
+            hx-get="{% url 'get-task' collection.pk %}" 
+            hx-target="#tasks"
+            hx-push-url="?collection={{ collection.slug }}">{{ collection.name }}
+    </button>
+</div>
+{% endfor %}
